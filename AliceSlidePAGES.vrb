@@ -1,0 +1,18 @@
+\frametitle{Distinguish between Positive from Negative Sentiments}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#alice_matrix<-acast(alice_words,word~sentiment,}
+                    \hlcom{#value.var='freq',fill=0)}
+\hlcom{#comparison.cloud(alice_matrix,colors=c('red','green'))}
+
+\hlcom{#Using .png "rplot" below instead of actual plot from code }
+\hlcom{#so the whole figure is visible on the slide (Heidi's idea)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{figure}
+\includegraphics[scale=0.5]{rplot}
+\end{figure}
+

@@ -1,0 +1,11 @@
+\documentclass{beamer}
+\usetheme{bergen}
+\usecolortheme{albatross}
+
+\begin{document}
+
+\title{Alice Cloud}
+\author{Judy Minichelli}
+
+
+\end{document}

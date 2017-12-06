@@ -1,0 +1,142 @@
+\documentclass{beamer}
+\usetheme{}
+\usecolortheme{}
+
+\begin{document}
+
+\title{Wordcloud with Sentiments: Alice in Wonderland}
+\author{Judy Minichelli}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Outline}
+   \tableofcontents
+\end{frame}
+
+\section{Install and load libraries}
+\begin{frame}[fragile]
+  \frametitle{Install and load libraries}
+   \begin{itemize}
+    \item<1->
+     <<warning=FALSE,message=FALSE>>=
+     library(dplyr)
+     @
+     \item<2->
+     <<warning=FALSE,message=FALSE>>=
+     library(ggplot2)
+     @
+     \item<3->
+     <<warning=FALSE,message=FALSE>>=
+     library(gutenbergr)
+     @
+     \item<4->
+     <<warning=FALSE,message=FALSE>>=
+     library(stringr)
+     @
+     \item<5->  
+     <<warning=FALSE,message=FALSE>>=
+     library(tidytext)
+     @
+     \item<6->  
+     <<warning=FALSE,message=FALSE>>=
+     library(wordcloud)
+     @
+     \item<7->  
+     <<warning=FALSE,message=FALSE>>=
+     library(wordcloud2)
+     @
+     \item<8->  
+     <<warning=FALSE,message=FALSE>>=
+     library(reshape2)
+     @
+    
+    \end{itemize}
+\end{frame}
+
+\section{Download Alice in Wonderland text}
+\begin{frame}[fragile]
+ \frametitle{Download Alice in Wonderland text}
+   <<message=FALSE,warning=FALSE>>=
+   alice<-gutenberg_download(11)
+   @
+\end{frame}
+
+%%Showing 500th line of the text.  498:500 would be those 3 lines.  %%Substring is pulling out first 21 characters of the those lines %%because they are too long.
+
+\section{Remove Chapter Headings}
+ \begin{frame}[fragile]
+  \frametitle{Remove Chapter Headings}
+   <<message=FALSE,warning=FALSE>>=
+   alice<-alice%>%
+   filter(!str_detect(alice$text,'^CHAPTER'))
+   
+   alice<-alice[10:3339,]
+   @
+\end{frame}
+
+\section{Unpack the Words}
+ \begin{frame}[fragile]
+  \frametitle{Unpack the Words}
+    <<message=FALSE,warning=FALSE>>=
+    alice_words<-alice%>%
+    unnest_tokens(word,text)
+@
+\end{frame}
+
+\section{The Bing Lexicon}
+ \begin{frame}[fragile]
+  \frametitle{The Bing Lexicon}
+    <<message=FALSE,warning=FALSE>>=
+   bing<-get_sentiments('bing')
+   @
+\end{frame}
+
+\section{The Inner Join}
+ \begin{frame}[fragile]
+  \frametitle{The Inner Join}
+   <<message=FALSE,warning=FALSE>>=
+   alice_words<-inner_join(alice_words,bing)
+   alice_words$gutenberg_id<-NULL
+   @
+\end{frame}
+
+\section{Assign Sentiments}
+ \begin{frame}[fragile,allowframebreaks]
+  \frametitle{Assign Sentiments}
+   <<>>=
+  alice_words<-alice_words%>%
+  group_by(word)%>%
+  summarize(freq=n(),sentiment=first(sentiment))
+   @
+\end{frame}
+
+\section{Wordcloud}
+ \begin{frame}[fragile,allowframebreaks]
+  \frametitle{Wordcloud}
+   <<>>=
+   wordcloud(alice_words$word,alice_words$freq, min.freq = 3)
+   @
+\end{frame}
+
+\section{Distinguish between Positive from Negative Sentiments}
+ \begin{frame}[fragile,allowframebreaks]
+  \frametitle{Distinguish between Positive from Negative Sentiments}
+   <<>>=
+   #alice_matrix<-acast(alice_words,word~sentiment,
+                       #value.var='freq',fill=0)
+   #comparison.cloud(alice_matrix,colors=c('red','green'))
+   
+   #Using .png "rplot" below instead of actual plot from code 
+   #so the whole figure is visible on the slide (Heidi's idea)
+   @
+
+\begin{figure}
+\includegraphics[scale=0.5]{rplot}
+\end{figure}
+
+\end{frame}
+
+\end{document}
